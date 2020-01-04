@@ -12,6 +12,8 @@ export default class Textinput extends React.Component {
             {inputLabel}
 
             <input
+                ref={this.props.refInput}
+                defaultValue={this.props.value}
                 type={this.props.type}
                 className={inputClass}
                 placeholder={this.props.placeholder}
@@ -24,11 +26,14 @@ Textinput.defaultProps = {
     label: null,
     type: 'text',
     placeholder: '',
+    value: '',
     half: false
 }
 
 Textinput.propTypes = {
+    refInput: PropTypes.object.isRequired,
     type: PropTypes.string,
+    value: PropTypes.string,
     placeholder: PropTypes.any,
     half: PropTypes.bool
 }

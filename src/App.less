@@ -7,6 +7,15 @@
 @formpadding: 30px;
 @base: ~"(min-width: 800px)";
 @borderradius: 5px;
+.textInput {
+  width: 100%;
+  box-sizing: border-box;
+  color: #000;
+  border-radius: @borderradius;
+  border-color: @bordercolor;
+  border-style: solid;
+  border-width: 1px;
+}
 
 html, body {
   margin: 0;
@@ -54,13 +63,9 @@ html, body {
   }
 
   &-textInput {
-    width: 100%;
     font-size: 18px;
     line-height: 30px;
-    color: #000;
-    border-radius: @borderradius;
-    border-color: @bordercolor;
-    box-sizing: border-box;
+    .textInput();
 
     &-half {
       width: 50%;
@@ -68,8 +73,14 @@ html, body {
 
       & + .App-textInput-half {
         border-radius: 0 @borderradius @borderradius 0;
+        border-left-color: #fff;
       }
     }
+  }
+
+  &-textArea {
+    .textInput();
+    resize: vertical;
   }
 
   &-messages {
