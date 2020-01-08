@@ -1,10 +1,14 @@
 import React from 'react';
+import Fileinput from "./fileinput";
 import Textinput from "./textinput";
 import Label from "./label";
+import {connect} from 'react-redux'
 
-export default class Formbox extends React.Component {
+class Formbox extends React.Component {
     constructor(props) {
         super(props);
+
+        // fixme move to constants
         this.inputsData = [{
                 label: "От кого",
                 placeholder: "Имя",
@@ -37,14 +41,14 @@ export default class Formbox extends React.Component {
 
         this.state = {
             inputValues: this.inputsData.map(() => ''),
-            textValue: ''
+            textValue: '',
         };
 
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleSubmit(ev) {
-        /* узкое место - магические индексы */
+        /* магические индексы */
         const MAGIC_REF_INDEXES = [
             /* Тема письма */ 4,
             /* Имя отправителя */ 0,
@@ -62,13 +66,7 @@ export default class Formbox extends React.Component {
                 "from.email" : this.refInputs[MAGIC_REF_INDEXES[2]].current.value,
                 "to.name" : this.refInputs[MAGIC_REF_INDEXES[3]].current.value,
                 "message": { "text" : this.refInputs[MAGIC_REF_INDEXES[4]].current.value },
-                "attaches": [
-/*                    {
-                        "name" : "имя файла",
-                        "content": "содержимое файла закодированное base64",
-                        "encoding" : "base64",
-                    }*/
-                ]
+                "attaches": this.props.attachedFiles
             },
             "sendwhen": "test",
             "mca": [
@@ -81,7 +79,7 @@ export default class Formbox extends React.Component {
 
     render(){
 
-
+        // fixme generate uniqKey
         const inputs = this.inputsData.map( (cfg, index) => <Textinput {...cfg}
                                                                        value={this.state.inputValues[index]}
                                                                        refInput={this.refInputs[index]}
@@ -97,9 +95,13 @@ export default class Formbox extends React.Component {
                           ref={ this.refInputs[lastRefIndex] }
                          />
 
-                {/* input type file */}
+                <Fileinput attachedFiles={ this.props.attachedFiles }/>
 
                 <input type="button" value="Отправить" onClick={this.handleSubmit}/>
         </>
     }
 }
+
+const mapStateToProps = (state) => ({ attachedFiles: state.attachedFiles })
+
+export default connect(mapStateToProps)(Formbox)
