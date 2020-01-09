@@ -3,6 +3,7 @@ import Fileinput from "./fileinput";
 import Textinput from "./textinput";
 import Label from "./label";
 import {connect} from 'react-redux'
+import { uniqueId } from '../util'
 
 class Formbox extends React.Component {
     constructor(props) {
@@ -79,11 +80,10 @@ class Formbox extends React.Component {
 
     render(){
 
-        // fixme generate uniqKey
         const inputs = this.inputsData.map( (cfg, index) => <Textinput {...cfg}
                                                                        value={this.state.inputValues[index]}
                                                                        refInput={this.refInputs[index]}
-        />)
+                                                                       key={ uniqueId() } />)
         const lastRefIndex = this.refInputs.length - 1
 
         return  <>

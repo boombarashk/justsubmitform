@@ -1,10 +1,10 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import { addAttach } from '../ac'
+import { uniqueId } from '../util'
 
-const FileInfo = fileCfg => {
-    // fixme generate uniqKey
-    return <div className="App-attachment">
+const FileInfo = (fileCfg, id) => {
+    return <div className="App-attachment" data-id={ id } key={ id }>
         { fileCfg.name } - { fileCfg.size } (bytes)
     </div>
 }
@@ -59,7 +59,9 @@ class Fileinput extends React.Component {
     }
 
     render(){
-        const attachedFilesList = this.props.attachedFiles.map( fileCfg => FileInfo(fileCfg) )
+        const attachedFilesList = this.props.attachedFiles.map( fileCfg => {
+            return FileInfo(fileCfg, uniqueId())
+        })
 
         return <div>
             <input type="file" onChange={this.handleChange}/>{/*multiple*/}
