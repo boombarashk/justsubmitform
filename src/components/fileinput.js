@@ -1,15 +1,10 @@
 import React from 'react'
-import {connect} from 'react-redux'
-import { addAttach } from '../ac'
-import { uniqueId } from '../util'
+import FileList from "./filelist";
+import PropTypes from 'prop-types';
+import {uniqueId} from "../util";
+import AttachmentOutlinedIcon from '@material-ui/icons/AttachmentOutlined';
 
-const FileInfo = (fileCfg, id) => {
-    return <div className="App-attachment" data-id={ id } key={ id }>
-        { fileCfg.name } - { fileCfg.size } (bytes)
-    </div>
-}
-
-class Fileinput extends React.Component {
+class FileInput extends React.Component {
     constructor(props){
         super(props);
         this.attachedFiles = props.attachedFiles;
@@ -24,59 +19,39 @@ class Fileinput extends React.Component {
         const size20Mb = 4 * size5Mb
         let arrayFiles = Array.from(ev.target.files)
         const countFiles = arrayFiles.length
-        const indexFile = countFiles - 1 // == 0
+        const indexFile = 0 // not multiple
 
         const sizeFile = ev.target.files[indexFile].size
 //      console.log(sizeFile > size1Mb ? Math.round( sizeFile / size1Mb) : sizeFile)
-        if(ev.target.files[indexFile].size > 30000/*size5Mb */){
+        if(ev.target.files[indexFile].size > size5Mb ){
             alert("File is too big!");
-
-           ev.target.value=""
+            ev.target.value=""
         } else {
-
-            let file = ev.target.files[indexFile];
-            const reader = new FileReader();
-            /*
-             * fileCfg object
-             * name: string,
-             * size: number,
-             * data: base64
-                               {
-                                    "name" : "имя файла",
-                                    "content": "содержимое файла закодированное base64",
-                                    "encoding" : "base64",
-                                }
-             * */
-            reader.onload = (event) => {
-                this.props.addAttachment({
-                    name: file.name,
-                    size: file.size,
-                    content: window.btoa(event.target.result)
-                })
-            };
-            reader.readAsBinaryString(file);// readAsText
+            this.props.handleLoadFile(ev.target.files[indexFile])
         }
     }
 
     render(){
-        const attachedFilesList = this.props.attachedFiles.map( fileCfg => {
-            return FileInfo(fileCfg, uniqueId())
-        })
+        const submitBtnId = uniqueId()
 
-        return <div>
-            <input type="file" onChange={this.handleChange}/>{/*multiple*/}
+        return <>
+            <FileList files={ this.props.attachedFiles }
+                      handleDrop={this.props.handleLoadFile} />
 
-            { attachedFilesList.length ? attachedFilesList : 'no attach' }
-        </div>
+            <label htmlFor={ submitBtnId } className="App-fileUploadButton">
+                <AttachmentOutlinedIcon className="App-attachment-iconAttach" fontSize="small"/> Прикрепить файл
+                <input id={ submitBtnId } type="file" onChange={this.handleChange} className="App-fileUploadButton_hidden"/>
+            </label>
+        </>
     }
 }
 
-const mapDispatchToProps = (dispatch) => ({
-    addAttachment:  (fileCfg) => dispatch(addAttach(fileCfg)),
-})
+export default FileInput;
 
-export default connect(null, mapDispatchToProps)(Fileinput);
-
-Fileinput.defaultProps = {
+FileInput.defaultProps = {
     attachedFiles: [],
+}
+FileList.propTypes = {
+    attachedFiles: PropTypes.array,
+    handleLoadFile: PropTypes.func
 }

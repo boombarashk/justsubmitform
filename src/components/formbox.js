@@ -1,51 +1,51 @@
 import React from 'react';
-import Fileinput from "./fileinput";
+import FileInput from "./fileinput";
 import Textinput from "./textinput";
 import Label from "./label";
 import {connect} from 'react-redux'
 import { uniqueId } from '../util'
+import { addAttach } from "../ac"
+import DragAndDrop from './draganddrop'
+import { INPUTS_CONFIG } from '../constants'
 
 class Formbox extends React.Component {
     constructor(props) {
         super(props);
 
-        // fixme move to constants
-        this.inputsData = [{
-                label: "От кого",
-                placeholder: "Имя",
-                type: 'text',
-                half: true
-            }, {
-                label: null,
-                placeholder: "Email",
-                type: 'email',
-                half: true
-            },
-            {
-                label: "Кому",
-                placeholder: "Имя",
-                type: 'text',
-                half: true
-            }, {
-                label: null,
-                placeholder: "Email",
-                type: 'email',
-                half: true
-            }, {
-                label: "Тема письма",
-                type: 'text',
-                half: false
-            }];
-        this.refInputs = this.inputsData.map(() => React.createRef());
-        // ref for textarea
-        this.refInputs.push( React.createRef() );
+        this.refInputs = INPUTS_CONFIG.map(() => React.createRef());
+        this.refInputs.push( React.createRef() ); // ref for textarea
 
         this.state = {
-            inputValues: this.inputsData.map(() => ''),
+            inputValues: INPUTS_CONFIG.map(() => ''),
             textValue: '',
         };
 
         this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    handleLoadFile = (file) => {
+        const reader = new FileReader();
+        /*
+         * fileCfg object
+         * name: имя файла [string],
+         * size: размер в байтах [number],
+         * content: содержимое файла, закодированное base64
+
+                           + "encoding" : "base64"
+         * */
+        reader.onload = (event) => {
+            this.props.addAttachment({
+                name: file.name,
+                size: file.size,
+                content: event.target.result.replace(/^data:.+;base64,/, '')
+            })
+        };
+
+        try {
+            reader.readAsDataURL(file)
+        } catch(e){
+            console.log('ERROR: ', e)
+        }
     }
 
     handleSubmit(ev) {
@@ -79,14 +79,13 @@ class Formbox extends React.Component {
     }
 
     render(){
-
-        const inputs = this.inputsData.map( (cfg, index) => <Textinput {...cfg}
-                                                                       value={this.state.inputValues[index]}
-                                                                       refInput={this.refInputs[index]}
-                                                                       key={ uniqueId() } />)
+        const inputs = INPUTS_CONFIG.map( (cfg, index) => <Textinput {...cfg}
+                                                                     value={this.state.inputValues[index]}
+                                                                     refInput={this.refInputs[index]}
+                                                                     key={ uniqueId() } />)
         const lastRefIndex = this.refInputs.length - 1
 
-        return  <>
+        return  <DragAndDrop handleDrop={this.handleLoadFile}>
                 {inputs}
 
                 <Label label="Сообщение"/>
@@ -95,13 +94,17 @@ class Formbox extends React.Component {
                           ref={ this.refInputs[lastRefIndex] }
                          />
 
-                <Fileinput attachedFiles={ this.props.attachedFiles }/>
+                <FileInput attachedFiles={ this.props.attachedFiles }
+                           handleLoadFile={ this.handleLoadFile } />
 
-                <input type="button" value="Отправить" onClick={this.handleSubmit}/>
-        </>
+                <input type="button" value="Отправить" className="App-submitBtn" onClick={this.handleSubmit}/>
+        </DragAndDrop>
     }
 }
 
 const mapStateToProps = (state) => ({ attachedFiles: state.attachedFiles })
+const mapDispatchToProps = (dispatch) => ({
+    addAttachment:  (fileCfg) => dispatch(addAttach(fileCfg)),
+})
 
-export default connect(mapStateToProps)(Formbox)
+export default connect(mapStateToProps, mapDispatchToProps)(Formbox)
