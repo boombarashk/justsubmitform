@@ -6,9 +6,10 @@ import {connect} from 'react-redux'
 import { uniqueId } from '../util'
 import { addAttach } from "../ac"
 import DragAndDrop from './draganddrop'
-import { INPUTS_CONFIG } from '../constants'
+import { INPUTS_CONFIG, SIZE_5MB } from '../constants'
+import FileList from "./filelist";
 
-class Formbox extends React.Component {
+class FormBox extends React.Component {
     constructor(props) {
         super(props);
 
@@ -45,6 +46,17 @@ class Formbox extends React.Component {
             reader.readAsDataURL(file)
         } catch(e){
             console.log('ERROR: ', e)
+        }
+    }
+    handleLoadFiles = (files) => {
+        // todo check count file and sizes
+        /* if(files[i].size > SIZE_5MB ){
+            alert("File is too big!");
+            ev.target.value=""
+        }
+        */
+        for (let i = 0; i < files.length ; i++) {
+            this.handleLoadFile( files[i] )
         }
     }
 
@@ -85,7 +97,7 @@ class Formbox extends React.Component {
                                                                      key={ uniqueId() } />)
         const lastRefIndex = this.refInputs.length - 1
 
-        return  <DragAndDrop handleDrop={this.handleLoadFile}>
+        return  <DragAndDrop handleDrop={this.handleLoadFiles}>
                 {inputs}
 
                 <Label label="Сообщение"/>
@@ -94,8 +106,9 @@ class Formbox extends React.Component {
                           ref={ this.refInputs[lastRefIndex] }
                          />
 
-                <FileInput attachedFiles={ this.props.attachedFiles }
-                           handleLoadFile={ this.handleLoadFile } />
+                <FileList files={ this.props.attachedFiles } />
+
+                <FileInput handleLoadFiles={ this.handleLoadFiles } />
 
                 <input type="button" value="Отправить" className="App-submitBtn" onClick={this.handleSubmit}/>
         </DragAndDrop>
@@ -107,4 +120,8 @@ const mapDispatchToProps = (dispatch) => ({
     addAttachment:  (fileCfg) => dispatch(addAttach(fileCfg)),
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(Formbox)
+export default connect(mapStateToProps, mapDispatchToProps)(FormBox)
+
+FormBox.defaultProps = {
+    attachedFiles: [],
+}

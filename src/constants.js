@@ -26,3 +26,8 @@ export const INPUTS_CONFIG = [{
         type: 'text',
         half: false
     }]
+
+
+export const SIZE_1MB = 1048576
+export const SIZE_5MB = 5 * SIZE_1MB
+export const SIZE_20MB = 4 * SIZE_5MB

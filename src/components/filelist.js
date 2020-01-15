@@ -34,5 +34,4 @@ export default FileList
 
 FileList.propTypes = {
     files: PropTypes.array.isRequired,
-    handleDrop: PropTypes.func
 }

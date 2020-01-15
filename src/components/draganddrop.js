@@ -34,12 +34,9 @@ export default class DragAndDrop extends Component {
         ev.preventDefault()
         ev.stopPropagation()
         this.setState({drag: false})
-        if (ev.dataTransfer.files && ev.dataTransfer.files.length > 0) {
-            // console.log(ev.dataTransfer.files[0].name, ev.dataTransfer.files[0].size)
-            //e.files || e.dataTransfer.files
-            for (let i = 0; i < ev.dataTransfer.files.length; i++) { //fixme move for -> handleDropFile
-                this.props.handleDrop(ev.dataTransfer.files[i])
-            }
+        if (ev.dataTransfer.files && ev.dataTransfer.files.length > 0) { //e.files || e.dataTransfer.files
+            this.props.handleDrop(ev.dataTransfer.files)
+
             ev.dataTransfer.clearData()
             this.dragCounter = 0
             this.setState({dragging: false})
