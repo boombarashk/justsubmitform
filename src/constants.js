@@ -1,4 +1,5 @@
 export const ADD_ATTACHMENT = "add_attach"
+export const DELETE_ATTACHMENT = "delete_attach"
 
 export const INPUTS_CONFIG = [{
     label: "От кого",
