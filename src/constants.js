@@ -32,3 +32,7 @@ export const INPUTS_CONFIG = [{
 export const SIZE_1MB = 1048576
 export const SIZE_5MB = 5 * SIZE_1MB
 export const SIZE_20MB = 4 * SIZE_5MB
+export const LIMIT_COUNT_FILES = 5
+export const ERROR_MSG_BIG_FILE = 'Недопустимо большой файл'
+export const ERROR_MSG_MANY_FILES = 'Количество файлов превышает 5'
+export const ERROR_MSG_BIG_SUM_FILES = 'Суммарный объем файлов больше 20Мб'

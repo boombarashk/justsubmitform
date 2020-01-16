@@ -3,10 +3,10 @@ import FileInput from "./fileinput";
 import Textinput from "./textinput";
 import Label from "./label";
 import {connect} from 'react-redux'
-import { uniqueId } from '../util'
+import { uniqueId, checkCountAndSizeFiles } from '../util'
 import { addAttach } from "../ac"
 import DragAndDrop from './draganddrop'
-import { INPUTS_CONFIG, SIZE_5MB } from '../constants'
+import { INPUTS_CONFIG } from '../constants'
 import FileList from "./filelist";
 
 class FormBox extends React.Component {
@@ -48,15 +48,16 @@ class FormBox extends React.Component {
             console.log('ERROR: ', e)
         }
     }
+
     handleLoadFiles = (files) => {
-        // todo check count file and sizes
-        /* if(files[i].size > SIZE_5MB ){
-            alert("File is too big!");
-            ev.target.value=""
-        }
-        */
-        for (let i = 0; i < files.length ; i++) {
-            this.handleLoadFile( files[i] )
+        const checkResult = checkCountAndSizeFiles(this.props.attachedFiles, files)
+
+        if (typeof checkResult !== 'string') {
+            for (let i = 0; i < files.length; i++) {
+                this.handleLoadFile(files[i])
+            }
+        } else {
+            alert(checkResult)
         }
     }
 
